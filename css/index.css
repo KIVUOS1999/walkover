@@ -63,9 +63,11 @@ img:hover{
 }
 
 .content-right{
+    display: flex;
     padding: 10px;
     margin-bottom: 70px;
     transition: 500ms ease-in-out;
+    align-items: center;
 }
 
 .content-right:hover{
@@ -78,13 +80,21 @@ img:hover{
 .text{
     text-align: justify;
 }
-
-.content-right .image{
-    float: right;
-    width: 30%;
-}
-
 .content-right .text{
-    width: 60%
+    padding: 20px;
+    flex: 2;
+}
+.content-right .image{
+    flex: 1;
+    margin: 2px;
 }
 
+@media(max-width: 768px) {
+    .content-right{
+        flex-direction: column;
+    }
+
+    img{
+        filter: blur(0);
+    }
+}
