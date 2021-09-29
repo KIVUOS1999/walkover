@@ -8,7 +8,9 @@ body{
     display: flex;
     flex-direction: column;
 }
-
+.logo img{
+    width:50px;
+}
 .navbar{
     z-index: 10;
     width: 100%;
@@ -46,13 +48,13 @@ body{
     transition: 500ms ease-in-out;
 }
 
-img{
+.content-right img{
     width: 100%;
     filter: blur(10px);
     transition: 500ms ease-in-out;
 }
 
-img:hover{
+.content-right img:hover{
     filter: blur(0px);
     transition: 500ms ease-in-out;
 }
@@ -91,7 +93,7 @@ img:hover{
         flex-direction: column;
     }
 
-    img{
+    .content-right img{
         filter: blur(0);
     }
 }
