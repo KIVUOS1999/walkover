@@ -120,7 +120,8 @@ pre{
     z-index: 10;
     width: 50px;
     height: 50px;
-    
+    margin-bottom: 20px;
+    margin-right: 20px;
 }
 
 #dark img{
@@ -151,7 +152,11 @@ pre{
         flex-direction: column;
     }
 
-    .content-right img{
+    .content-right .image img{
         filter: blur(0);
+    }
+
+    img{
+        width:100%;
     }
 }
