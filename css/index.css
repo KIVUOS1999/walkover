@@ -76,6 +76,8 @@ body{
 
 .text{
     text-align: justify;
+    overflow: hidden;
+    width:100%;
 }
 
 .content-right .text{
@@ -87,6 +89,28 @@ body{
     flex: 1;
     margin: 2px;
 }
+
+pre{
+    display: block;
+    overflow: scroll;
+    margin:0px;
+    width: 100%;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 2px;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #ff1500; 
+    border-radius: 10px;
+  }
 
 @media(max-width: 768px) {
     .content-right{

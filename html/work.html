@@ -21,33 +21,213 @@
         </div>
         
         <div class="heading" style = "margin-top: 100px;">
-            <h1>Neural Network?</h1>
+            <h1>What we are going to achieve.</h1>
         </div>
     
        <div class="content-right" >
            <div class="image">
-               <img src="./images/nn.png" alt="">
+               <img src="../images/anime.png" alt="">
            </div>
            <div class="text">
-            <p>Neural networks, also known as artificial neural networks (ANNs) or simulated neural networks (SNNs), are a subset of machine learning and are at the heart of deep learning algorithms. Their name and structure are inspired by the human brain, mimicking the way that biological neurons signal to one another.</p>
-            <p>Artificial neural networks (ANNs) are comprised of a node layers, containing an input layer, one or more hidden layers, and an output layer. Each node, or artificial neuron, connects to another and has an associated weight and threshold. If the output of any individual node is above the specified threshold value, that node is activated, sending data to the next layer of the network. Otherwise, no data is passed along to the next layer of the network.</p>
+               <p>So, in this example we are going to take a <a href='https://www.kaggle.com/splcher/animefacedataset'>dataset</a> of anime faces and try to generate new faces with similar face. To achieve a generator that will do the task for us we have to first train a generator then the discriminator will tell whether the generated faces are looking same as the faces in dataset.</p>
            </div>
        </div>
     
-    
         <div class="heading">
-            <h1>GAN?</h1>
+            <h1>Lets boot up our code editor.</h1>
         </div>
+
         <div class="content-right">    
             <div class="text">
-                <p>Generative Adversarial Networks, or GANs for short, are an approach to generative modeling using deep learning methods, such as convolutional neural networks.</p>
-                <p>Generative modeling is an unsupervised learning task in machine learning that involves automatically discovering and learning the regularities or patterns in input data in such a way that the model can be used to generate or output new examples that plausibly could have been drawn from the original dataset.</p>
-                <p>GANs are a clever way of training a generative model by framing the problem as a supervised learning problem with two sub-models: the generator model that we train to generate new examples, and the discriminator model that tries to classify examples as either real (from the domain) or fake (generated). The two models are trained together in a zero-sum game, adversarial, until the discriminator model is fooled about half the time, meaning the generator model is generating plausible examples.</p>
-                <p>GANs are an exciting and rapidly changing field, delivering on the promise of generative models in their ability to generate realistic examples across a range of problem domains, most notably in image-to-image translation tasks such as translating photos of summer to winter or day to night, and in generating photorealistic photos of objects, scenes, and people that even humans cannot tell are fake.</p>
+                <p>So we are going to write our code in VSCode you can choose which ever editor you want.</p>
+                <p>so first we will import the dataset as a numpy array and save it as an numpy array so, we dont have to again import it do it and resize it to 28X28 for faster computations. </p>
             </div>
     
-            <div class="image">
-                <img src="./images/gan.png" alt="">
+            <div class="text">
+                <pre>
+                    data = 'datasets/anime'
+                    training_data = []
+
+                    for i in tqdm(os.listdir(data)):
+                        a = cv2.imread(data +'/'+i)
+                        a = cv2.cvtColor(a, cv2.COLOR_BGR2RGB)
+                        a = cv2.resize(a, (28, 28))
+                        training_data.append(a)
+                    X = np.array(training_data)
+                    np.save("datasets/numpy_saves/anime_28X28_RGB", X)
+                </pre>
+            </div>
+        </div>
+
+        <div class="heading">
+            <h1>Import the python modules that we need.</h1>
+        </div>
+        
+        <div class="content-right">    
+            <div class="text">
+                <p>We are going to import all the necessary modues that we need inorder to run our scripts smoothly without an error.</p>
+            </div>
+    
+            <div class="text">
+                <pre>
+                    import matplotlib.pyplot as plt
+                    import pandas as pd
+                    import numpy as np
+                    from tqdm import tqdm
+                    import tensorflow as tf
+                    from tensorflow.keras.layers import Reshape, Conv2DTranspose
+                    from tensorflow.keras.layers import  Dense, Input, Flatten, Conv2D
+                    from tensorflow.keras.layers import MaxPool2D, LeakyReLU, BatchNormalization
+                    from tensorflow.keras.layers import  Conv2DTranspose, Dropout
+                    from tensorflow.keras.models import Model, Sequential, load_model
+                    from tensorflow.keras.optimizers import Adam,RMSprop
+                    
+                    import os
+                    import cv2
+                </pre>
+            </div>
+        </div>
+
+        <div class="heading">
+            <h1>Discriminator</h1>
+        </div>
+        
+        <div class="content-right">    
+            <div class="text">
+                <p>All right as you have come this far, now lets create our police that will verify if the generated images are true or false. A discriminator is pretty easy to make just a sequential model that contains lots of layers.</p>
+            </div>
+    
+            <div class="text">
+                <pre>
+                    def discriminator():
+                        model = Sequential()
+                        model.add(Conv2D(64, (3,3), strides=(2, 2), padding='same', input_shape=(28,28,3)))
+                        model.add(LeakyReLU(alpha=0.2))
+                        model.add(Dropout(0.4))
+                        model.add(Conv2D(64, (3,3), strides=(2, 2), padding='same'))
+                        model.add(LeakyReLU(alpha=0.2))
+                        model.add(Dropout(0.4))
+                        model.add(Flatten())
+                        model.add(Dense(1, activation='sigmoid'))
+                        opt = Adam(lr=0.0002, beta_1=0.5)
+                        model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
+                        return model
+                </pre>
+            </div>
+        </div>
+
+        <div class="heading">
+            <h1>Generator</h1>
+        </div>
+        
+        <div class="content-right">    
+            <div class="text">
+                <p>The generator is the model which is responsible to generate fake images. The generator will learn generating desired output from random noise over time by taking feedback from the discriminator.</p>
+            </div>
+    
+            <div class="text">
+                <pre>
+                    def generator(n):
+                        model = Sequential()
+                        n_nodes = 128 * 7 * 7
+                        model.add(Dense(n_nodes, input_dim=(n)))
+                        model.add(LeakyReLU(alpha=0.2))
+                        model.add(Reshape((7, 7, 128)))
+                        model.add(Conv2DTranspose(128, (4,4), strides=(2,2), padding='same'))
+                        model.add(LeakyReLU(alpha=0.2))
+                        model.add(Conv2DTranspose(128, (4,4), strides=(2,2), padding='same'))
+                        model.add(LeakyReLU(alpha=0.2))
+                        model.add(Conv2D(3, (7,7), activation='sigmoid', padding='same'))
+                        return model
+                </pre>
+            </div>
+        </div>
+
+        <div class="heading">
+            <h1>GAN</h1>
+        </div>
+        
+        <div class="content-right">    
+            <div class="text">
+                <p>GAN combines both the discriminator and generator sequentially and we don't want our discriminator to learn in this step as we will be trying to cheat the discriminator and the results will be used to improve our generator.</p>
+            </div>
+    
+            <div class="text">
+                <pre>
+                def gan(discriminator, generator):
+                    discriminator.trainable = False
+                    model = Sequential()
+                    model.add(generator)
+                    model.add(discriminator)
+                    model.compile(optimizer = Adam(
+                        lr = 2e-4, beta_1 = 0.5
+                        ), loss = "binary_crossentropy")
+                    return model
+
+                def preview(name, generator):
+                    fig, axis = plt.subplots(10,10, figsize = (20,20))
+                    for i in range(10):
+                        for j in range(10):
+                            axis[i,j].imshow(
+                                generator.predict(
+                                    np.random.randn(100).reshape(1,100)).reshape(28,28, 3)
+                            )
+                    plt.savefig("temp/"+'newC2_GRAY_'+str(name)+".png")
+                    plt.close()
+                </pre>
+            </div>
+        </div>
+
+        <div class="heading">
+            <h1>Lets train our model.</h1>
+        </div>
+        
+        <div class="content-right">    
+            <div class="text">
+                <p>In this step what we are going to do is take the generator make generate images and label them with 0 and we will take some of the real data and label them with 1 and combine them together.</p>
+                <p>The generated array will be passed to the discriminator. In this stage the discriminator is allowed to change its weights i.e. it can train.</p>
+                <p>Then the same set is passed from gan where the generator will learn and discriminator will only help the generator.</p>
+                <p>and for every epochs we will be itterating for total no of element in our dataset / batch size.</p>
+                <p>I am saving all the functions in a differrent py file and importing them as a f</p>
+            </div>
+    
+            <div class="text">
+                <pre>
+                import function as f
+                X = f.load_file(r'path of the saved numpy')
+                X = X/255.0
+                
+                discriminator = f.discriminator()
+                generator = f.generator(100)
+                gan = f.gan(discriminator, generator)
+                
+                itternations = 100
+                batch_size = 256
+                n = 100 
+                
+                for i in range(1, itternations+1):
+                    for j in range(len(X)//batch_size):
+                        x_real = X[f.np.random.randint(0, len(X), batch_size//2)].reshape(batch_size//2, 28,28,3)
+                        y_real = f.np.ones(batch_size//2).reshape(batch_size//2, 1)
+                
+                        x_fake = generator(f.np.random.randn(batch_size//2, n))
+                        y_fake = f.np.zeros(batch_size//2).reshape(batch_size//2, 1)
+                
+                        combined_x = f.np.vstack((x_real, x_fake))
+                        combined_y = f.np.vstack((y_real, y_fake))
+                
+                        dloss = discriminator.train_on_batch(combined_x, combined_y)
+                        gloss = gan.train_on_batch(f.np.random.randn(batch_size, n), f.np.ones(batch_size).reshape(batch_size, 1))
+                
+                        print("Current:", "EPOCH -->", i,"/",itternations, "Batch-->",j,'/',batch_size,'discrim loss',dloss,'gan loss',gloss)
+                    
+                    if i%50 == 0:#this is to save the model
+                        discriminator.save('discriminator_RGB2.model') 
+                        gan.save('gan_RGB2.model')
+                        generator.save('generator_RGB2.model')
+                    
+                    f.preview(i+100, generator) 
+                </pre>
             </div>
         </div>
     </div>
