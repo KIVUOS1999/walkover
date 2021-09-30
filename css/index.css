@@ -108,7 +108,7 @@ pre{
    
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #ff1500; 
+    background: #2c2c2c; 
     border-radius: 10px;
   }
 
