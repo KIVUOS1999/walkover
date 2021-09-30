@@ -5,7 +5,24 @@ const image = document.querySelectorAll('.content-right .image');
 const head = document.querySelectorAll('.content-right h1');
 const ul = document.querySelectorAll('.navbar');
 const topics = document.querySelectorAll('.main .heading');
-const t1 = new TimelineMax()
+const highlight = document.querySelectorAll('.content-right')
+const t1 = new TimelineMax();
+
+var s = document.getElementById('dark');
+s.onclick = function(){
+    var bod = document.body;
+    var nav = document.querySelector('.navbar');
+    bod.classList.toggle("dark_mode");
+    nav.classList.toggle('dark_mode_nav');
+    for(let i = 0; i< highlight.length; i++){
+        highlight[i].classList.toggle('dark_mode_content_right');
+    }
+}
+
+
+
+
+
 t1 .fromTo(
         ul,
         0.5,
@@ -49,3 +66,5 @@ t1 .fromTo(
         {opacity: '1', x: 0, ease: Power2.easeInOut} ,
         '=-0.7'
     )
+
+

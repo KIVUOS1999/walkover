@@ -2,6 +2,8 @@ body{
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
+    background-color: white;
+    color: black;
 }
 
 .main{
@@ -35,7 +37,7 @@ body{
 }
 .navbar .heading :hover{
     transition: 500ms ease-in-out;
-    color:#ff1500;
+    color:#ff3927d0;
 }
 .item a:hover{
     font-size: 20px;
@@ -100,17 +102,49 @@ pre{
 ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
-  }
+}
 
-  ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
     border-radius: 2px;
-  }
-   
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: #2c2c2c; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ff1500; 
     border-radius: 10px;
-  }
+}
+
+#dark{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+    width: 50px;
+    height: 50px;
+    
+}
+
+#dark img{
+    width: 100%;
+    height: 100%;
+    border-radius: 100px;
+}
+
+.dark_mode{
+    background-color: #232323;
+    color: #ffffff;
+}
+
+.dark_mode_nav{
+    background-color: #07005ad0;
+}
+
+.dark_mode_nav_heading{
+    color: white;
+}
+
+.dark_mode_content_right:hover{
+    background-color: #3d3d3d;
+}
 
 @media(max-width: 768px) {
     .content-right{
