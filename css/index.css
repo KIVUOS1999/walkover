@@ -50,13 +50,13 @@ body{
     transition: 500ms ease-in-out;
 }
 
-.content-right img{
+.content-right .image img{
     width: 100%;
     filter: blur(10px);
     transition: 500ms ease-in-out;
 }
 
-.content-right img:hover{
+.content-right .image img:hover{
     filter: blur(0px);
     transition: 500ms ease-in-out;
 }
